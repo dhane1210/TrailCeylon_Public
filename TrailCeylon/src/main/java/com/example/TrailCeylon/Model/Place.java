@@ -6,20 +6,17 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
-
-@Document
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-
+@Document(collection = "places")
+public class Place {
     @Id
     private String id;
     private String name;
-    private String email;
-    private String password;
-    private String location;
-    private Date createdAt;
-    private Date updatedAt;
+    private String description;
+    private String coordinates;
+    private double latitude;
+    private double longitude;
+    private String trackId; // Reference to the Track the place belongs to.
 }
