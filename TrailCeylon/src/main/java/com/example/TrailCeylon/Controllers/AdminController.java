@@ -3,12 +3,14 @@ package com.example.TrailCeylon.Controllers;
 import com.example.TrailCeylon.Model.Place;
 import com.example.TrailCeylon.Model.Track;
 import com.example.TrailCeylon.Model.User;
+import com.example.TrailCeylon.Repo.TrackRepo;
 import com.example.TrailCeylon.Service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -16,6 +18,9 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private TrackRepo trackRepo;
 
     // Manage Users
     @DeleteMapping("/removeUser/{id}")
@@ -36,6 +41,13 @@ public class AdminController {
     public ResponseEntity<Track> addTrack(@RequestBody Track track) {
         return ResponseEntity.ok(adminService.addTrack(track));
     }
+
+    @GetMapping("/getTrack/{id}")
+    public ResponseEntity<Track> getTrack(@PathVariable String id) {
+        Optional<Track> trackOpt = trackRepo.findById(id);
+        return trackOpt.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
 
     @PutMapping("/updateTrack/{id}")
     public ResponseEntity<Track> updateTrack(@PathVariable String id, @RequestBody Track updatedTrack) {

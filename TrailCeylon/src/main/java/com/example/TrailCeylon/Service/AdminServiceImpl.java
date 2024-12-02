@@ -35,6 +35,19 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Track addTrack(Track track) {
+        List<Place> places = track.getPlaces();
+
+        if (places != null) {
+            // Save each Place and set its ID
+            for (int i = 0; i < places.size(); i++) {
+                Place place = places.get(i);
+                if (place.getId() == null) { // Ensure ID is generated
+                    places.set(i, placeRepo.save(place)); // Save Place and update list
+                }
+            }
+        }
+
+        // Now save the Track with valid Place references
         return trackRepo.save(track);
     }
 
@@ -54,8 +67,16 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public boolean deleteTrack(String id) {
-        if (trackRepo.existsById(id)) {
-            trackRepo.deleteById(id);
+        Optional<Track> trackOpt = trackRepo.findById(id);
+        if (trackOpt.isPresent()) {
+            Track track = trackOpt.get();
+            List<Place> places = track.getPlaces();
+            if (places != null) {
+                for (Place place : places) {
+                    placeRepo.delete(place); // Delete each associated Place
+                }
+            }
+            trackRepo.delete(track); // Delete the Track
             return true;
         }
         return false;
